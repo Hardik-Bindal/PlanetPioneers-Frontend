@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Attempt Quiz - Planet Pioneers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Theme from index.html applied */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top left, #0d5c2f, #000000 80%);
+      color: white;
+      min-height: 100vh;
+    }
+    
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* Header styling from student.html */
+    .site-header {
+      padding: 12px 0;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin-bottom: 2rem;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+    }
+    
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    h3 { 
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Card styling from index.html */
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 1rem;
+    }
+    
+    /* Button styling adapted from index.html */
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 12px 28px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.3s;
+      border: 2px solid #34c759;
+      background: #34c759;
+      color: white;
+      cursor: pointer;
+    }
+     .btn:hover {
+      background: #28a745;
+      border-color: #28a745;
+    }
+
+    .btn-ghost {
+      display: inline-block;
+      text-decoration: none;
+      padding: 10px 26px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.3s;
+      background: transparent;
+      border: 2px solid #34c759;
+      color: #34c759;
+    }
+    .btn-ghost:hover { 
+      background: #34c759; 
+      color: white;
+    }
+
+    .small-muted { font-size:.9rem; color:#b5b5b5; }
+    
+    label { 
+        cursor:pointer; 
+        display: block;
+        padding: 1rem;
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+        transition: background 0.3s;
+        border: 1px solid transparent;
+    }
+    label:hover {
+        background: rgba(255,255,255,0.1);
+    }
+    input[type=checkbox] { 
+        margin-right:.8rem; 
+        transform: scale(1.2);
+        accent-color: #34c759;
+    }
+    
+    label input[type="checkbox"]:checked + span {
+        color: #34c759;
+        font-weight: 600;
+    }
+
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-row">
+      <div class="brand">
+        <img src="Earth.png" alt="Planet Pioneers Logo" style="height: 40px;">
+        <span>Planet Pioneers</span>
+      </div>
+      <a class="btn-ghost" href="student.html">Back to Dashboard</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div id="pageTitle"><h2>Attempt Quiz</h2></div>
+    <div id="quizContainer" class="card" style="margin-top:0;">Loading quiz...</div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const quizId = params.get('quiz');
+
+    async function loadQuiz(){
+      const container = document.getElementById('quizContainer');
+      const pageTitleEl = document.getElementById('pageTitle');
+      if(!quizId){ container.textContent='No quiz selected'; return; }
+      
+      const res = await apiGetQuiz(quizId);
+      if(res.error){ container.textContent='Error loading quiz: '+res.error; return; }
+
+      const q = res.quiz;
+      pageTitleEl.querySelector('h2').textContent = `Attempting: ${escapeHtml(q.title)}`;
+      
+      container.innerHTML = `
+        <p class="small-muted" style="margin-top: -1rem; margin-bottom: 2rem;">Topic: ${escapeHtml(q.topic)} • Difficulty: ${escapeHtml(q.difficulty)}</p>
+        <div id="questionsArea" style="display: flex; flex-direction: column; gap: 1.5rem;"></div>
+        <div style="text-align:right;margin-top:2rem">
+          <button id="submitAttempt" class="btn">Submit Answers</button>
+        </div>`;
+
+      const questionsArea = document.getElementById('questionsArea');
+
+      q.questions.forEach((ques, idx)=>{
+        const block = document.createElement('div');
+        block.className='card';
+        block.style.marginTop = '0';
+        block.innerHTML = `
+          <div style="font-weight:600; font-size: 1.1rem;">Q${idx+1}. ${escapeHtml(ques.questionText)}</div>
+          <div class="small-muted" style="margin-top:.4rem; margin-bottom: 1rem;">Select one or more answers</div>
+          <div id="q${idx}opts"></div>`;
+        questionsArea.appendChild(block);
+
+        const optsDiv = block.querySelector(`#q${idx}opts`);
+        ques.options.forEach((opt,optIdx)=>{
+          const id = `q${idx}_${optIdx}`;
+          const el = document.createElement('div');
+          el.innerHTML = `
+            <label for="${id}">
+              <input type="checkbox" name="q${idx}" value="${escapeHtml(opt)}" id="${id}"> 
+              <span>${escapeHtml(opt)}</span>
+            </label>`;
+          optsDiv.appendChild(el);
+        });
+      });
+
+      document.getElementById('submitAttempt').addEventListener('click', async ()=>{
+        const answers = q.questions.map((ques, idx)=>{
+          const inputs = document.querySelectorAll(`input[name="q${idx}"]:checked`);
+          const selected = Array.from(inputs).map(i=>i.value);
+          return { questionId: ques._id, selectedAnswer: selected };
+        });
+
+        const attemptRes = await apiAttemptQuiz(quizId, {answers});
+        if(attemptRes.error){ 
+            // A simple, non-blocking notification
+            const errorDiv = document.createElement('div');
+            errorDiv.style.color = '#ff9e9e';
+            errorDiv.style.marginTop = '1rem';
+            errorDiv.textContent = 'Error: '+attemptRes.error;
+            container.appendChild(errorDiv);
+            return; 
+        }
+
+        sessionStorage.setItem('lastResult', JSON.stringify(attemptRes.result));
+        location.href = `results.html?result=${attemptRes.result._id}`;
+      });
+    }
+
+    function escapeHtml(s){ 
+      return s ? s.replaceAll('&','&amp;')
+                .replaceAll('<','&lt;')
+                .replaceAll('>','&gt;') : ''; 
+    }
+
+    loadQuiz();
+  </script>
+</body>
+</html>

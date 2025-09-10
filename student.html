@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Dashboard - Planet Pioneers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* Theme from index.html applied */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top left, #0d5c2f, #000000 80%);
+      color: white;
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* Header styling from teacher.html */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding: 20px 40px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 30px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+    .header-content h1 {
+        margin: 0;
+        font-size: 1.8rem;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    /* Card styling from index.html */
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 0;
+    }
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    h3 { 
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Button styling adapted from teacher.html */
+    .btn {
+      padding: 12px 28px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.3s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      background: #34c759;
+      color: white;
+      box-shadow: 0 4px 10px rgba(52, 199, 89, 0.4);
+    }
+    .btn:hover { 
+      background: #28a745; 
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid #34c759;
+      color: #34c759;
+    }
+    .btn-secondary:hover {
+      background: #34c759;
+      color: white;
+    }
+    
+    /* Input styling for the new theme */
+    .input {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      outline: none;
+      font-family: inherit;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+    .input:focus {
+        border-color: #34c759;
+        box-shadow: 0 0 0 2px rgba(52, 199, 89, 0.3);
+    }
+
+
+    .quiz-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .quiz-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .quiz-item:first-of-type {
+        padding-top: 0;
+    }
+
+
+    .small-muted { color: #b5b5b5; font-size: 1rem; }
+
+    footer {
+      padding: 1.5rem;
+      text-align: center;
+      color: #888;
+      font-size: 12px;
+      margin-top: 2rem;
+    }
+    
+    #leaderboard {
+        list-style-type: decimal;
+        padding-left: 20px;
+        margin: 0;
+    }
+    #leaderboard li {
+        padding: 0.5rem 0;
+        font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+    <div class="wrap">
+        <header class="header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="Earth.png" alt="Planet Pioneers Logo" style="height: 40px;">
+                <span style="font-size: 1.6rem; font-weight: 700; color: #ffffff;">Planet Pioneers</span>
+            </div>
+            <div class="header-content" style="text-align: center;">
+                <h1 style="margin: 0; font-size: 1.8rem;">Student Dashboard</h1>
+            </div>
+            <button id="logoutBtn" class="btn btn-secondary">
+                <span>🚪</span>
+                Logout
+            </button>
+        </header>
+
+    <div class="container">
+      <!-- Main -->
+      <main style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Profile -->
+        <div class="card">
+          <h3>👩‍🎓 Profile & Progress</h3>
+          <p><strong>Name:</strong> <span id="stuName">—</span></p>
+          <p><strong>Eco Points:</strong> <span id="stuPoints">0</span></p>
+          <p><strong>Level:</strong> <span id="stuLevel">0</span></p>
+        </div>
+
+        <!-- Available Quizzes -->
+        <div class="card">
+          <h3>📝 Available Quizzes</h3>
+          <div id="quizSection">Loading quizzes...</div>
+        </div>
+
+        <!-- My Results -->
+        <div class="card">
+          <h3>📊 My Results</h3>
+          <div id="resultsSection">Loading...</div>
+        </div>
+      </main>
+
+      <!-- Sidebar -->
+      <aside style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="card">
+          <h3>🏆 Leaderboard</h3>
+          <ol id="leaderboard"></ol>
+        </div>
+
+        <div class="card">
+          <h3>⚡ Quick Actions</h3>
+          <input id="quizIdAttempt" class="input" placeholder="Enter Quiz ID to Attempt" />
+          <button id="attemptByIdBtn" class="btn" style="width:100%; margin-bottom: 1rem;">Start Quiz</button>
+
+          <a href="results.html" class="btn" style="width: 210.336px;">View My Results</a>
+        </div>
+
+        <div class="card">
+          <h3>🤖 Create Quiz with AI</h3>
+          <input id="aiTopic" class="input" placeholder="Enter topic (e.g. Climate Change)" />
+          <button id="createAIBtn" class="btn" style="width:100%">Generate Quiz</button>
+          <p id="aiMsg" class="small-muted" style="margin-top: 1rem;"></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Planet Pioneers | Built with 💚 for Sustainability
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{ 
+        try { localStorage.removeItem('pp_token'); } catch(e){}
+        window.location.href = 'login.html'; 
+    });
+
+    function getCurrentUser() {
+      try {
+        const token = localStorage.getItem('pp_token');
+        if (!token) return null;
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload;
+      } catch (e) {
+        console.error("Failed to get current user:", e);
+        return null;
+      }
+    }
+
+    async function loadStudent(){
+      const user = getCurrentUser();
+      document.getElementById('stuName').textContent = user ? user.name : '—';
+
+      // Quizzes
+      const res = await apiGetQuizzes();
+      const quizzes = res.quizzes || [];
+      const qSection = document.getElementById('quizSection');
+      qSection.innerHTML = '';
+      if(quizzes.length===0) qSection.innerHTML = '<div class="small-muted">No quizzes yet</div>';
+      quizzes.forEach(q=>{
+        const row = document.createElement('div');
+        row.className='quiz-item';
+        row.innerHTML = `<div><div style="font-weight:600">${q.title}</div>
+                         <div class="small-muted" style="font-size: 0.9rem;">${q.topic} • ${q.difficulty}</div></div>
+                         <a class="btn" href="attempt.html?quiz=${q._id}">Attempt</a>`;
+        qSection.appendChild(row);
+      });
+
+      // Leaderboard
+      const lb = await apiGetLeaderboard();
+      const list = document.getElementById('leaderboard');
+      list.innerHTML = '';
+      if(lb.error) list.innerHTML = '<li class="small-muted">No data</li>';
+      else lb.forEach(s => {
+        const li = document.createElement('li');
+        li.textContent = `${s.name} — ${s.ecoPoints} pts`;
+        list.appendChild(li);
+      });
+
+      // Profile
+      const profile = await apiGetProfile();
+      if(profile && profile.user){
+        document.getElementById('stuPoints').textContent = profile.user.ecoPoints || 0;
+        document.getElementById('stuLevel').textContent = profile.user.level || 0;
+      }
+
+      // Results
+      const results = await apiGetMyResults();
+      const rSection = document.getElementById('resultsSection');
+      rSection.innerHTML = '';
+      if(results.error || results.length===0){
+        rSection.innerHTML = '<div class="small-muted">No results yet</div>';
+      } else {
+        results.slice(0, 3).forEach(r=>{ // Show latest 3
+          const card = document.createElement('div');
+          card.className='quiz-item';
+          card.innerHTML = `<div><div style="font-weight:600">${r.quizTitle || 'Quiz'}</div>
+                            <div class="small-muted" style="font-size: 0.9rem;">Score: ${r.score}/${r.total}</div></div>
+                            <a class="btn btn-secondary" href="results.html?result=${r._id}">View</a>`;
+          rSection.appendChild(card);
+        });
+      }
+    }
+
+    // Quick Actions
+    document.getElementById('attemptByIdBtn').addEventListener('click', ()=>{
+      const qid = document.getElementById('quizIdAttempt').value.trim();
+      if(qid) location.href = `attempt.html?quiz=${qid}`;
+    });
+
+
+    document.getElementById('createAIBtn').addEventListener('click', ()=>{
+      const topic = document.getElementById('aiTopic').value.trim();
+      const msg = document.getElementById('aiMsg');
+      if(!topic){ msg.textContent='Please enter a topic'; return; }
+      msg.textContent = 'Generating quiz with AI...';
+      setTimeout(()=>{ msg.textContent = `✅ Quiz on "${topic}" generated!`; }, 1200);
+    });
+
+    loadStudent();
+  </script>
+</body>
+</html>
+
+
+<style>
+  /* Ensure "View My Results" button matches "Start Quiz" button width */
+  #attemptByIdBtn,
+  .btn-view-results {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+</style>
+<script>
+  // Set "View My Results" button width to match "Start Quiz" button
+  document.addEventListener('DOMContentLoaded', function() {
+    var startBtn = document.getElementById('attemptByIdBtn');
+    var viewBtn = document.querySelector('a[href="results.html"]');
+    if (startBtn && viewBtn) {
+      viewBtn.style.width = startBtn.offsetWidth + 'px';
+      viewBtn.classList.add('btn-view-results');
+    }
+  });
+</script> </style>
