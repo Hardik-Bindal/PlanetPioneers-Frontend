@@ -8,7 +8,179 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+<<<<<<< HEAD
     /* (same styles you already had, unchanged) */
+=======
+    /* Theme from index.html applied */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top left, #0d5c2f, #000000 80%);
+      color: white;
+      min-height: 100vh;
+    }
+    
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* Header styling from student.html */
+    .site-header {
+      padding: 12px 0;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin-bottom: 2rem;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+    
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    h3 { 
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Card styling from index.html */
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 1rem;
+    }
+    
+    /* Button styling adapted from index.html */
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 13px;
+      transition: 0.3s;
+      border: 2px solid #34c759;
+      background: #34c759;
+      color: white;
+      cursor: pointer;
+    }
+     .btn:hover {
+      background: #28a745;
+      border-color: #28a745;
+    }
+
+    .btn-ghost {
+      display: inline-block;
+      text-decoration: none;
+      padding: 10px 26px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.3s;
+      background: transparent;
+      border: 2px solid #34c759;
+      color: #34c759;
+    }
+    .btn-ghost:hover { 
+      background: #34c759; 
+      color: white;
+    }
+
+    .answer {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 10px;
+      font-weight: 500;
+      background: rgba(0,0,0,0.2);
+    }
+    .correct {
+      border-left: 4px solid #34c759;
+      color: #adffad;
+    }
+    .wrong {
+      border-left: 4px solid #ff5252;
+      color: #ff9e9e;
+    }
+    .small-muted { font-size:.9rem; color:#b5b5b5; }
+    
+    .gemini-explanation {
+        margin-top:1rem; 
+        padding: 1rem; 
+        background: rgba(0,0,0,0.25); 
+        border-radius: 8px;
+        border-left: 4px solid #4a90e2;
+        font-size: 0.95rem;
+        white-space: pre-wrap;
+        line-height: 1.6;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* New styles for summary dashboard */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+    .stat-card {
+        background: rgba(255, 255, 255, 0.07);
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+    }
+    .stat-card h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 500;
+        color: #b5b5b5;
+    }
+    .stat-card p {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #34c759;
+    }
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
   </style>
 </head>
 <body>
@@ -29,6 +201,7 @@
 
   <script src="app.js"></script>
   <script>
+<<<<<<< HEAD
     // ✅ Auth guard
     function ensureAuth(roleRequired){
       try{
@@ -47,10 +220,13 @@
     }
     const currentUser = ensureAuth("student");
 
+=======
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
     const params = new URLSearchParams(location.search);
     const quizId = params.get('quiz');
     const resultId = params.get('result') || (sessionStorage.getItem('lastResult') && JSON.parse(sessionStorage.getItem('lastResult'))._id);
 
+<<<<<<< HEAD
     async function callGemini(prompt) {
         const apiKey = ""; 
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
@@ -82,19 +258,95 @@
         const res = await apiGetQuizResults(quizId);
         if(res.error){ el.textContent = 'Error: '+res.error; return; }
         if (res.length === 0) { el.innerHTML = `<h3>No attempts yet.</h3>`; return; }
+=======
+    /**
+     * Calls the Gemini API to generate content.
+     * @param {string} prompt The prompt to send to the model.
+     * @returns {Promise<string>} The generated text.
+     */
+    async function callGemini(prompt) {
+        const apiKey = ""; // This will be handled by the execution environment.
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+        };
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                const errorBody = await response.json();
+                console.error("API Error:", errorBody);
+                return `Error: ${errorBody.error.message}`;
+            }
+
+            const result = await response.json();
+            if (result.candidates && result.candidates[0].content && result.candidates[0].content.parts[0]) {
+                return result.candidates[0].content.parts[0].text;
+            } else {
+                return "Sorry, I couldn't generate an explanation. Please try again.";
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+            return "An error occurred while contacting the AI. Please check your connection.";
+        }
+    }
+
+
+    async function loadResults(){
+      const el = document.getElementById('resultsArea');
+      const pageTitleEl = document.getElementById('pageTitle');
+      let userName = 'Student'; // Default name
+
+      if (!quizId) {
+          try {
+              const profile = await apiGetProfile(); 
+              if (profile && profile.user && profile.user.name) {
+                  userName = profile.user.name;
+              }
+          } catch (e) {
+              console.error("Could not fetch user profile", e);
+          }
+      }
+
+      if (quizId) {
+        // 📌 Teacher view: list all student results for quiz
+        pageTitleEl.innerHTML = `<h2>Quiz Results</h2>`;
+        const res = await apiGetQuizResults(quizId);
+        if(res.error){ el.textContent = 'Error: '+res.error; return; }
+        
+        if (res.length === 0) {
+            el.innerHTML = `<h3>No attempts found for this quiz yet.</h3>`;
+            return;
+        }
+        
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
         el.innerHTML = `<h3>All Attempts</h3>`;
         res.forEach(r=>{
           const item = document.createElement('div');
           item.className='card';
           item.style.padding = '20px';
           item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+<<<<<<< HEAD
             <div><div style="font-weight:700">${r.student.name}</div>
             <div class="small-muted">Score: ${r.score}/${r.total}</div></div>
+=======
+            <div>
+              <div style="font-weight:700">${r.student.name}</div>
+              <div class="small-muted">Score: ${r.score}/${r.total}</div>
+            </div>
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
             <a class="btn-ghost" href="results.html?result=${r._id}">Open</a>
           </div>`;
           el.appendChild(item);
         });
       } else if (resultId) {
+<<<<<<< HEAD
         // 📌 Student view: single attempt
         pageTitleEl.innerHTML = `<h2>Detailed Results for ${userName}</h2>`;
         const res = await apiGetMyResults();
@@ -157,13 +409,155 @@
           const summary=res.map(r=>`- ${r.quizTitle||'Quiz'}: ${r.score}/${r.total}`).join('\n');
           const prompt=`Student performance summary:\n${summary}\nGive supportive review, strengths, weaknesses, and 3 tips.`;
           aiDiv.textContent=await callGemini(prompt); aiBtn.style.display='none';
+=======
+        // 📌 Student view: show details of one result
+        pageTitleEl.innerHTML = `<h2>Detailed Results for ${userName}</h2>`;
+        if(!resultId){ el.textContent = 'No result specified'; return; }
+
+        const res = await apiGetMyResults(); // Assuming this can fetch a single one or we filter
+        if(res.error){ el.textContent = 'Error: '+res.error; return; }
+        const found = res.find(r=> r._id === resultId);
+        if(!found){ el.textContent = 'Result not found'; return; }
+
+        const quizRes = await apiGetQuiz(found.quiz._id || found.quiz);
+        if(quizRes.error){ el.textContent = 'Error loading quiz'; return; }
+        const quiz = quizRes.quiz;
+
+        el.innerHTML = `<h3>Your Score: ${found.score}/${found.total}</h3><div id="ansList" style="display: flex; flex-direction: column; gap: 1rem;"></div>`;
+        const ansList = document.getElementById('ansList');
+
+        quiz.questions.forEach((q, i)=>{
+          const a = found.answers.find(ans => ans.questionId === q._id);
+          const isCorrect = a ? a.isCorrect : false;
+          const sel = a && a.selectedAnswer ? (Array.isArray(a.selectedAnswer) ? a.selectedAnswer.join(', ') : a.selectedAnswer) : 'No answer';
+          const corr = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
+
+          const row = document.createElement('div');
+          row.className='card';
+          row.style.marginTop = '0';
+
+          let geminiSection = '';
+          if (!isCorrect) {
+              geminiSection = `<div style="margin-top: 1rem;"><button class="btn gemini-explain-btn">✨ Explain Further</button><div class="gemini-explanation" style="display: none;"></div></div>`;
+          }
+
+          row.innerHTML = `<div style="font-weight:600">Q${i+1}. ${escapeHtml(q.questionText)}</div><div class="answer ${isCorrect ? 'correct' : 'wrong'}"><div><strong>Your Answer:</strong> ${sel}</div><div style="margin-top: 0.5rem;"><strong>Correct Answer:</strong> ${corr}</div></div>${(q.explanation) ? `<div class="small-muted" style="margin-top:1rem; padding: 0.8rem; background: rgba(0,0,0,0.2); border-radius: 8px;"><em>Explanation:</em> ${escapeHtml(q.explanation)}</div>` : ''}${geminiSection}`;
+          ansList.appendChild(row);
+
+          if (!isCorrect) {
+              const explainBtn = row.querySelector('.gemini-explain-btn');
+              const explanationDiv = row.querySelector('.gemini-explanation');
+              explainBtn.addEventListener('click', async () => {
+                  explainBtn.disabled = true;
+                  explainBtn.innerHTML = '<span class="loading-spinner"></span>Generating...';
+                  explanationDiv.style.display = 'block';
+                  explanationDiv.textContent = 'Thinking...';
+                  const prompt = `A student was asked the following question: "${q.questionText}". The correct answer is "${corr}". The student incorrectly answered "${sel}". Please provide a clear, concise explanation of the underlying concept. Explain why the correct answer is right and why the student's choice was wrong. Keep the tone encouraging and educational.`;
+                  const explanation = await callGemini(prompt);
+                  explanationDiv.textContent = explanation;
+                  explainBtn.style.display = 'none';
+              });
+          }
+        });
+      } else {
+        // 📌 NEW: Student summary dashboard
+        pageTitleEl.innerHTML = `<h2>${userName}'s Dashboard</h2>`;
+        const res = await apiGetMyResults();
+        if(res.error || res.length === 0){
+          el.innerHTML = `<h3>No results found.</h3><p>Attempt a quiz from the student dashboard to see your progress!</p>`;
+          return;
+        }
+
+        let highest = 0, lowest = 100, totalScore = 0;
+        res.forEach(r => {
+            const percentage = r.total > 0 ? (r.score / r.total) * 100 : 0;
+            if(percentage > highest) highest = percentage;
+            if(percentage < lowest) lowest = percentage;
+            totalScore += percentage;
+        });
+        const average = res.length > 0 ? totalScore / res.length : 0;
+        if (res.length === 0) lowest = 0;
+
+        let attemptsHtml = '';
+        res.forEach(r => {
+            attemptsHtml += `
+            <div class="card" style="padding: 20px; margin-top: 1rem; display:flex; justify-content:space-between; align-items:center;">
+                <div>
+                    <div style="font-weight:700">${r.quizTitle || 'Quiz'}</div>
+                    <div class="small-muted">Score: ${r.score}/${r.total}</div>
+                </div>
+                <a href="results.html?result=${r._id}" class="btn-ghost">View Details</a>
+            </div>
+            `;
+        });
+
+        el.innerHTML = `
+            <h3>Performance Overview</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>Highest Score</h4>
+                    <p>${highest.toFixed(0)}%</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Lowest Score</h4>
+                    <p>${lowest.toFixed(0)}%</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Average Score</h4>
+                    <p>${average.toFixed(0)}%</p>
+                </div>
+                <div class="stat-card">
+                    <h4>Quizzes Taken</h4>
+                    <p>${res.length}</p>
+                </div>
+            </div>
+
+            <!-- Gemini AI Review Section -->
+            <div style="margin-bottom: 2.5rem; text-align: center;">
+                <button id="aiReviewBtn" class="btn">✨ Get AI Performance Review</button>
+                <div id="aiReviewResult" class="gemini-explanation" style="display: none; text-align: left; margin-top: 1.5rem;"></div>
+            </div>
+
+            <h3>All Your Attempts</h3>
+            <div id="allAttemptsList">${attemptsHtml}</div>
+        `;
+
+        const aiReviewBtn = document.getElementById('aiReviewBtn');
+        const aiReviewResult = document.getElementById('aiReviewResult');
+
+        aiReviewBtn.addEventListener('click', async () => {
+            aiReviewBtn.disabled = true;
+            aiReviewBtn.innerHTML = '<span class="loading-spinner"></span>Analyzing...';
+            aiReviewResult.style.display = 'block';
+            aiReviewResult.textContent = 'Our AI coach is looking at your results...';
+
+            const resultsSummary = res.map(r => {
+                return `- Quiz: "${r.quizTitle || 'Untitled'}", Score: ${r.score}/${r.total}`;
+            }).join('\n');
+
+            const prompt = `Act as a friendly and encouraging academic coach for a student learning about environmental topics. The student has the following quiz results:\n${resultsSummary}\n\nBased ONLY on these results, please provide:\n1. A brief, positive summary of their overall performance.\n2. Identify their potential strengths and weaknesses based on quiz titles and scores.\n3. Suggest 2-3 specific, actionable study tips or topics to focus on for improvement.\n\nKeep the tone supportive and motivational. Address the student directly.`;
+
+            const reviewText = await callGemini(prompt);
+            aiReviewResult.textContent = reviewText;
+            aiReviewBtn.style.display = 'none'; // Hide button after it has been used
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
         });
       }
     }
 
+<<<<<<< HEAD
     function escapeHtml(s){ return s ? s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') : ''; }
+=======
+    function escapeHtml(s){ 
+      return s ? s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') : ''; 
+    }
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
 
     loadResults();
   </script>
 </body>
 </html>
+<<<<<<< HEAD
+=======
+
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397

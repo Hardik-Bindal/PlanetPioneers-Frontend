@@ -8,7 +8,140 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+<<<<<<< HEAD
     /* (same styling as before, unchanged) */
+=======
+    /* Theme from index.html applied */
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top left, #0d5c2f, #000000 80%);
+      color: white;
+      min-height: 100vh;
+    }
+    
+    .wrap {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+
+    /* Header styling from student.html */
+    .site-header {
+      padding: 12px 0;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin-bottom: 2rem;
+    }
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+    }
+    
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+    h3 { 
+        color: #ffffff;
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Card styling from index.html */
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 1rem;
+    }
+    
+    /* Button styling adapted from index.html */
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      padding: 12px 28px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.3s;
+      border: 2px solid #34c759;
+      background: #34c759;
+      color: white;
+      cursor: pointer;
+    }
+     .btn:hover {
+      background: #28a745;
+      border-color: #28a745;
+    }
+
+    .btn-ghost {
+      display: inline-block;
+      text-decoration: none;
+      padding: 10px 26px;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 14px;
+      transition: 0.3s;
+      background: transparent;
+      border: 2px solid #34c759;
+      color: #34c759;
+    }
+    .btn-ghost:hover { 
+      background: #34c759; 
+      color: white;
+    }
+
+    .small-muted { font-size:.9rem; color:#b5b5b5; }
+    
+    label { 
+        cursor:pointer; 
+        display: block;
+        padding: 1rem;
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+        transition: background 0.3s;
+        border: 1px solid transparent;
+    }
+    label:hover {
+        background: rgba(255,255,255,0.1);
+    }
+    input[type=checkbox] { 
+        margin-right:.8rem; 
+        transform: scale(1.2);
+        accent-color: #34c759;
+    }
+    
+    label input[type="checkbox"]:checked + span {
+        color: #34c759;
+        font-weight: 600;
+    }
+
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
   </style>
 </head>
 <body>
@@ -29,6 +162,7 @@
 
   <script src="app.js"></script>
   <script>
+<<<<<<< HEAD
     // ✅ Ensure only students can access this page
     function ensureAuth(roleRequired){
       try{
@@ -47,6 +181,8 @@
     }
     const currentUser = ensureAuth("student");
 
+=======
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
     const params = new URLSearchParams(location.search);
     const quizId = params.get('quiz');
 
@@ -62,9 +198,13 @@
       pageTitleEl.querySelector('h2').textContent = `Attempting: ${escapeHtml(q.title)}`;
       
       container.innerHTML = `
+<<<<<<< HEAD
         <p class="small-muted" style="margin-top: -1rem; margin-bottom: 2rem;">
           Topic: ${escapeHtml(q.topic)} • Difficulty: ${escapeHtml(q.difficulty)}
         </p>
+=======
+        <p class="small-muted" style="margin-top: -1rem; margin-bottom: 2rem;">Topic: ${escapeHtml(q.topic)} • Difficulty: ${escapeHtml(q.difficulty)}</p>
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
         <div id="questionsArea" style="display: flex; flex-direction: column; gap: 1.5rem;"></div>
         <div style="text-align:right;margin-top:2rem">
           <button id="submitAttempt" class="btn">Submit Answers</button>
@@ -104,6 +244,10 @@
 
         const attemptRes = await apiAttemptQuiz(quizId, {answers});
         if(attemptRes.error){ 
+<<<<<<< HEAD
+=======
+            // A simple, non-blocking notification
+>>>>>>> bcdb42dc00745a935a82261867425bcdda005397
             const errorDiv = document.createElement('div');
             errorDiv.style.color = '#ff9e9e';
             errorDiv.style.marginTop = '1rem';
