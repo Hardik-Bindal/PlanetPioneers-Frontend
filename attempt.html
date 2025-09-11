@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Attempt Quiz - Planet Pioneers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* (same styling as before, unchanged) */
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-row">
+      <div class="brand">
+        <img src="Earth.png" alt="Planet Pioneers Logo" style="height: 40px;">
+        <span>Planet Pioneers</span>
+      </div>
+      <a class="btn-ghost" href="student.html">Back to Dashboard</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div id="pageTitle"><h2>Attempt Quiz</h2></div>
+    <div id="quizContainer" class="card" style="margin-top:0;">Loading quiz...</div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // ✅ Ensure only students can access this page
+    function ensureAuth(roleRequired){
+      try{
+        const token = localStorage.getItem('pp_token');
+        if(!token) return window.location.href='login.html';
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if(roleRequired && payload.role !== roleRequired){
+          if(payload.role==='teacher') window.location.href='teacher.html';
+          else window.location.href='login.html';
+        }
+        return payload;
+      }catch(e){
+        console.error("Auth check failed:",e);
+        return window.location.href='login.html';
+      }
+    }
+    const currentUser = ensureAuth("student");
+
+    const params = new URLSearchParams(location.search);
+    const quizId = params.get('quiz');
+
+    async function loadQuiz(){
+      const container = document.getElementById('quizContainer');
+      const pageTitleEl = document.getElementById('pageTitle');
+      if(!quizId){ container.textContent='No quiz selected'; return; }
+      
+      const res = await apiGetQuiz(quizId);
+      if(res.error){ container.textContent='Error loading quiz: '+res.error; return; }
+
+      const q = res.quiz;
+      pageTitleEl.querySelector('h2').textContent = `Attempting: ${escapeHtml(q.title)}`;
+      
+      container.innerHTML = `
+        <p class="small-muted" style="margin-top: -1rem; margin-bottom: 2rem;">
+          Topic: ${escapeHtml(q.topic)} • Difficulty: ${escapeHtml(q.difficulty)}
+        </p>
+        <div id="questionsArea" style="display: flex; flex-direction: column; gap: 1.5rem;"></div>
+        <div style="text-align:right;margin-top:2rem">
+          <button id="submitAttempt" class="btn">Submit Answers</button>
+        </div>`;
+
+      const questionsArea = document.getElementById('questionsArea');
+
+      q.questions.forEach((ques, idx)=>{
+        const block = document.createElement('div');
+        block.className='card';
+        block.style.marginTop = '0';
+        block.innerHTML = `
+          <div style="font-weight:600; font-size: 1.1rem;">Q${idx+1}. ${escapeHtml(ques.questionText)}</div>
+          <div class="small-muted" style="margin-top:.4rem; margin-bottom: 1rem;">Select one or more answers</div>
+          <div id="q${idx}opts"></div>`;
+        questionsArea.appendChild(block);
+
+        const optsDiv = block.querySelector(`#q${idx}opts`);
+        ques.options.forEach((opt,optIdx)=>{
+          const id = `q${idx}_${optIdx}`;
+          const el = document.createElement('div');
+          el.innerHTML = `
+            <label for="${id}">
+              <input type="checkbox" name="q${idx}" value="${escapeHtml(opt)}" id="${id}"> 
+              <span>${escapeHtml(opt)}</span>
+            </label>`;
+          optsDiv.appendChild(el);
+        });
+      });
+
+      document.getElementById('submitAttempt').addEventListener('click', async ()=>{
+        const answers = q.questions.map((ques, idx)=>{
+          const inputs = document.querySelectorAll(`input[name="q${idx}"]:checked`);
+          const selected = Array.from(inputs).map(i=>i.value);
+          return { questionId: ques._id, selectedAnswer: selected };
+        });
+
+        const attemptRes = await apiAttemptQuiz(quizId, {answers});
+        if(attemptRes.error){ 
+            const errorDiv = document.createElement('div');
+            errorDiv.style.color = '#ff9e9e';
+            errorDiv.style.marginTop = '1rem';
+            errorDiv.textContent = 'Error: '+attemptRes.error;
+            container.appendChild(errorDiv);
+            return; 
+        }
+
+        sessionStorage.setItem('lastResult', JSON.stringify(attemptRes.result));
+        location.href = `results.html?result=${attemptRes.result._id}`;
+      });
+    }
+
+    function escapeHtml(s){ 
+      return s ? s.replaceAll('&','&amp;')
+                .replaceAll('<','&lt;')
+                .replaceAll('>','&gt;') : ''; 
+    }
+
+    loadQuiz();
+  </script>
+</body>
+</html>

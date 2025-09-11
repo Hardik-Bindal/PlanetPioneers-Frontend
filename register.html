@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Register - Planet Pioneers</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at top left, #0d5c2f, #000000 80%);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+    .header {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 12px 40px;
+      border-radius: 30px;
+      margin-bottom: 40px;
+      font-weight: 500;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header img { height: 32px; }
+    .header a { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 2.5rem 3rem;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      backdrop-filter: blur(15px);
+      text-align: center;
+      animation: fadeIn 0.8s ease-in;
+    }
+    .card h2 { margin-bottom: 2rem; font-size: 2rem; color: #34c759; }
+    label { display: block; text-align: left; margin: 0.8rem 0 0.3rem; font-weight: 500; color: #ccc; }
+    .input {
+      width: 100%; padding: 0.8rem 1rem; border-radius: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      outline: none; background: rgba(255, 255, 255, 0.1); color: white;
+      margin-bottom: 1rem; transition: border 0.3s, box-shadow 0.3s; font-size: 1rem; box-sizing: border-box;
+    }
+    .input::placeholder { color: #888; }
+    .input:focus { border-color: #34c759; box-shadow: 0 0 8px rgba(52, 199, 89, 0.5); }
+    select.input { appearance: none; padding-right: 2.5rem; }
+
+    .password-wrapper { position: relative; width: 100%; }
+    .toggle-eye {
+      position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #888; display: flex; align-items: center;
+    }
+    .toggle-eye svg { width: 22px; height: 22px; }
+    .toggle-eye:hover { color: #34c759; }
+
+    .buttons { display: flex; gap: 15px; margin-top: 1.5rem; }
+    .btn { flex: 1; padding: 12px 28px; border-radius: 25px; border: none; cursor: pointer; font-weight: 600; font-size: 14px; transition: 0.3s; }
+    .btn-primary { background: #34c759; color: white; box-shadow: 0 4px 10px rgba(52, 199, 89, 0.4); }
+    .btn-primary:hover { background: #28a745; }
+    .btn-secondary { background: transparent; border: 2px solid #34c759; color: #34c759; }
+    .btn-secondary:hover { background: #34c759; color: white; }
+
+    #regMsg { font-size: 0.9rem; margin-top: 1rem; height: 20px; }
+    footer { margin-top: 50px; font-size: 12px; color: #888; }
+
+    @keyframes fadeIn { from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <a href="index.html">
+      <img src="Earth.png" alt="Company Logo">
+      Planet Pioneers
+    </a>
+  </div>
+
+  <div class="card">
+    <h2>Create Your Account</h2>
+
+    <label for="name">Name</label>
+    <input id="name" class="input" placeholder="Your full name" />
+
+    <label for="regEmail">Email</label>
+    <input id="regEmail" class="input" type="email" placeholder="you@example.com" />
+
+    <label for="regPassword">Password</label>
+    <div class="password-wrapper">
+        <input id="regPassword" class="input" type="password" placeholder="••••••••" />
+        <button type="button" class="toggle-eye" onclick="toggleVisibility('regPassword', this)">
+          👁
+        </button>
+    </div>
+
+    <label for="confirmPassword">Confirm Password</label>
+    <div class="password-wrapper">
+        <input id="confirmPassword" class="input" type="password" placeholder="••••••••" />
+        <button type="button" class="toggle-eye" onclick="toggleVisibility('confirmPassword', this)">
+          👁
+        </button>
+    </div>
+
+    <label for="role">Role</label>
+    <select id="role" class="input">
+      <option value="student">Student</option>
+      <option value="teacher">Teacher</option>
+    </select>
+
+    <div class="buttons">
+      <button id="registerBtn" class="btn btn-primary">Register</button>
+      <a href="login.html" class="btn btn-secondary" style="text-decoration:none;text-align:center;">Back to Login</a>
+    </div>
+
+    <p id="regMsg"></p>
+  </div>
+  
+  <footer>© 2023 Planet Pioneers. All rights reserved.</footer>
+
+  <script src="app.js"></script>
+  <script>
+    function toggleVisibility(inputId, button) {
+      const field = document.getElementById(inputId);
+      const isPassword = field.type === 'password';
+      field.type = isPassword ? 'text' : 'password';
+    }
+
+    document.getElementById('registerBtn').addEventListener('click', async ()=>{
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const role = document.getElementById('role').value;
+      const msg = document.getElementById('regMsg');
+
+      if(password !== confirmPassword){
+        msg.textContent = "Passwords do not match!";
+        msg.style.color = 'crimson';
+        return;
+      }
+      if(password.length < 6){
+        msg.textContent = "Password must be at least 6 characters!";
+        msg.style.color = 'crimson';
+        return;
+      }
+
+      const res = await apiRegister({ name, email, password, role });
+      if(res.error){
+        msg.textContent = res.error;
+        msg.style.color = 'crimson';
+        return;
+      }
+
+      // ✅ Save token & user already handled in app.js for login,
+      // but ensure it’s stored after register as well
+      localStorage.setItem('pp_token', res.token);
+      localStorage.setItem('pp_user', JSON.stringify(res.user));
+
+      msg.textContent = '✅ Registered successfully! Redirecting...';
+      msg.style.color = '#34c759';
+
+      setTimeout(()=> {
+        if(res.user.role === 'teacher') location.href = 'teacher.html';
+        else location.href = 'student.html';
+      }, 1000);
+    });
+  </script>
+</body>
+</html>

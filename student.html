@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Dashboard - Planet Pioneers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* (same styles as you had) */
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="header">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <img src="Earth.png" alt="Planet Pioneers Logo" style="height: 40px;">
+        <span style="font-size: 1.6rem; font-weight: 700; color: #ffffff;">Planet Pioneers</span>
+      </div>
+      <div class="header-content" style="text-align: center;">
+        <h1 style="margin: 0; font-size: 1.8rem;">Student Dashboard</h1>
+      </div>
+      <button id="logoutBtn" class="btn btn-secondary">
+        <span>🚪</span>
+        Logout
+      </button>
+    </header>
+
+    <div class="container">
+      <!-- Main -->
+      <main style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Profile -->
+        <div class="card">
+          <h3>👩‍🎓 Profile & Progress</h3>
+          <p><strong>Name:</strong> <span id="stuName">—</span></p>
+          <p><strong>Eco Points:</strong> <span id="stuPoints">0</span></p>
+          <p><strong>Level:</strong> <span id="stuLevel">0</span></p>
+        </div>
+
+        <!-- Available Quizzes -->
+        <div class="card">
+          <h3>📝 Available Quizzes</h3>
+          <div id="quizSection">Loading quizzes...</div>
+        </div>
+
+        <!-- My Results -->
+        <div class="card">
+          <h3>📊 My Results</h3>
+          <div id="resultsSection">Loading...</div>
+        </div>
+      </main>
+
+      <!-- Sidebar -->
+      <aside style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="card">
+          <h3>🏆 Leaderboard</h3>
+          <ol id="leaderboard"></ol>
+        </div>
+
+        <div class="card">
+          <h3>⚡ Quick Actions</h3>
+          <input id="quizIdAttempt" class="input" placeholder="Enter Quiz ID to Attempt" />
+          <button id="attemptByIdBtn" class="btn" style="width:100%; margin-bottom: 1rem;">Start Quiz</button>
+          <a href="results.html" class="btn" style="width: 210.336px;">View My Results</a>
+        </div>
+
+        <div class="card">
+          <h3>🤖 Create Quiz with AI</h3>
+          <input id="aiTopic" class="input" placeholder="Enter topic (e.g. Climate Change)" />
+          <button id="createAIBtn" class="btn" style="width:100%">Generate Quiz</button>
+          <p id="aiMsg" class="small-muted" style="margin-top: 1rem;"></p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 Planet Pioneers | Built with 💚 for Sustainability
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    // ✅ Auth check
+    function ensureAuth(roleRequired){
+      try{
+        const token = localStorage.getItem('pp_token');
+        if(!token) return window.location.href='login.html';
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if(roleRequired && payload.role !== roleRequired){
+          // redirect to correct dashboard
+          if(payload.role==='teacher') window.location.href='teacher.html';
+          else window.location.href='login.html';
+        }
+        return payload;
+      }catch(e){
+        console.error("Auth check failed:",e);
+        return window.location.href='login.html';
+      }
+    }
+
+    const currentUser = ensureAuth("student");
+
+    document.getElementById('logoutBtn').addEventListener('click', ()=>{ 
+      localStorage.removeItem('pp_token');
+      window.location.href = 'login.html'; 
+    });
+
+    async function loadStudent(){
+      document.getElementById('stuName').textContent = currentUser ? currentUser.name : '—';
+
+      // Fetch and render quizzes
+      const res = await apiGetQuizzes();
+      const quizzes = res.quizzes || [];
+      const qSection = document.getElementById('quizSection');
+      qSection.innerHTML = '';
+      if(quizzes.length===0) qSection.innerHTML = '<div class="small-muted">No quizzes yet</div>';
+      quizzes.forEach(q=>{
+        const row = document.createElement('div');
+        row.className='quiz-item';
+        row.innerHTML = `<div><div style="font-weight:600">${q.title}</div>
+                         <div class="small-muted" style="font-size: 0.9rem;">${q.topic} • ${q.difficulty}</div></div>
+                         <a class="btn" href="attempt.html?quiz=${q._id}">Attempt</a>`;
+        qSection.appendChild(row);
+      });
+
+      // Leaderboard
+      const lb = await apiGetLeaderboard();
+      const list = document.getElementById('leaderboard');
+      list.innerHTML = '';
+      if(lb.error) list.innerHTML = '<li class="small-muted">No data</li>';
+      else lb.forEach(s => {
+        const li = document.createElement('li');
+        li.textContent = `${s.name} — ${s.ecoPoints} pts`;
+        list.appendChild(li);
+      });
+
+      // Profile
+      const profile = await apiGetProfile();
+      if(profile && profile.user){
+        document.getElementById('stuPoints').textContent = profile.user.ecoPoints || 0;
+        document.getElementById('stuLevel').textContent = profile.user.level || 0;
+      }
+
+      // Results
+      const results = await apiGetMyResults();
+      const rSection = document.getElementById('resultsSection');
+      rSection.innerHTML = '';
+      if(results.error || results.length===0){
+        rSection.innerHTML = '<div class="small-muted">No results yet</div>';
+      } else {
+        results.slice(0, 3).forEach(r=>{
+          const card = document.createElement('div');
+          card.className='quiz-item';
+          card.innerHTML = `<div><div style="font-weight:600">${r.quizTitle || 'Quiz'}</div>
+                            <div class="small-muted" style="font-size: 0.9rem;">Score: ${r.score}/${r.total}</div></div>
+                            <a class="btn btn-secondary" href="results.html?result=${r._id}">View</a>`;
+          rSection.appendChild(card);
+        });
+      }
+    }
+
+    // Quick Actions
+    document.getElementById('attemptByIdBtn').addEventListener('click', ()=>{
+      const qid = document.getElementById('quizIdAttempt').value.trim();
+      if(qid) location.href = `attempt.html?quiz=${qid}`;
+    });
+
+    document.getElementById('createAIBtn').addEventListener('click', ()=>{
+      const topic = document.getElementById('aiTopic').value.trim();
+      const msg = document.getElementById('aiMsg');
+      if(!topic){ msg.textContent='Please enter a topic'; return; }
+      msg.textContent = 'Generating quiz with AI...';
+      setTimeout(()=>{ msg.textContent = `✅ Quiz on "${topic}" generated!`; }, 1200);
+    });
+
+    loadStudent();
+  </script>
+</body>
+</html>

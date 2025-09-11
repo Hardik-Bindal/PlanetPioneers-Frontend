@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Results - Planet Pioneers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* (same styles you already had, unchanged) */
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-row">
+      <div class="brand" style="display: flex; align-items: center; gap: 12px;">
+        <img src="Earth.png" alt="Planet Pioneers Logo" style="height: 40px;">
+        <span>Planet Pioneers</span>
+      </div>
+      <a class="btn-ghost" href="student.html">Back to Dashboard</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div id="pageTitle"><h2>Results</h2></div>
+    <div id="resultsArea" class="card" style="margin-top: 0;">Loading...</div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // ✅ Auth guard
+    function ensureAuth(roleRequired){
+      try{
+        const token = localStorage.getItem('pp_token');
+        if(!token) return window.location.href='login.html';
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if(roleRequired && payload.role !== roleRequired){
+          if(payload.role==='teacher') window.location.href='teacher.html';
+          else window.location.href='login.html';
+        }
+        return payload;
+      }catch(e){
+        console.error("Auth check failed:",e);
+        return window.location.href='login.html';
+      }
+    }
+    const currentUser = ensureAuth("student");
+
+    const params = new URLSearchParams(location.search);
+    const quizId = params.get('quiz');
+    const resultId = params.get('result') || (sessionStorage.getItem('lastResult') && JSON.parse(sessionStorage.getItem('lastResult'))._id);
+
+    async function callGemini(prompt) {
+        const apiKey = ""; 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const payload = { contents: [{ parts: [{ text: prompt }] }] };
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) {
+                const errorBody = await response.json();
+                return `Error: ${errorBody.error.message}`;
+            }
+            const result = await response.json();
+            return result.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate an explanation.";
+        } catch (error) {
+            return "An error occurred while contacting the AI.";
+        }
+    }
+
+    async function loadResults(){
+      const el = document.getElementById('resultsArea');
+      const pageTitleEl = document.getElementById('pageTitle');
+      let userName = currentUser?.name || 'Student';
+
+      if (quizId) {
+        // 📌 Teacher view: all student attempts for this quiz
+        pageTitleEl.innerHTML = `<h2>Quiz Results</h2>`;
+        const res = await apiGetQuizResults(quizId);
+        if(res.error){ el.textContent = 'Error: '+res.error; return; }
+        if (res.length === 0) { el.innerHTML = `<h3>No attempts yet.</h3>`; return; }
+        el.innerHTML = `<h3>All Attempts</h3>`;
+        res.forEach(r=>{
+          const item = document.createElement('div');
+          item.className='card';
+          item.style.padding = '20px';
+          item.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+            <div><div style="font-weight:700">${r.student.name}</div>
+            <div class="small-muted">Score: ${r.score}/${r.total}</div></div>
+            <a class="btn-ghost" href="results.html?result=${r._id}">Open</a>
+          </div>`;
+          el.appendChild(item);
+        });
+      } else if (resultId) {
+        // 📌 Student view: single attempt
+        pageTitleEl.innerHTML = `<h2>Detailed Results for ${userName}</h2>`;
+        const res = await apiGetMyResults();
+        if(res.error){ el.textContent = 'Error: '+res.error; return; }
+        const found = res.find(r=> r._id === resultId);
+        if(!found){ el.textContent = 'Result not found'; return; }
+        const quizRes = await apiGetQuiz(found.quiz._id || found.quiz);
+        if(quizRes.error){ el.textContent = 'Error loading quiz'; return; }
+        const quiz = quizRes.quiz;
+        el.innerHTML = `<h3>Your Score: ${found.score}/${found.total}</h3><div id="ansList"></div>`;
+        const ansList = document.getElementById('ansList');
+        quiz.questions.forEach((q, i)=>{
+          const a = found.answers.find(ans => ans.questionId === q._id);
+          const isCorrect = a?.isCorrect;
+          const sel = a?.selectedAnswer ? (Array.isArray(a.selectedAnswer) ? a.selectedAnswer.join(', ') : a.selectedAnswer) : 'No answer';
+          const corr = Array.isArray(q.correctAnswer) ? q.correctAnswer.join(', ') : q.correctAnswer;
+          const row = document.createElement('div');
+          row.className='card';
+          row.innerHTML = `<div style="font-weight:600">Q${i+1}. ${escapeHtml(q.questionText)}</div>
+            <div class="answer ${isCorrect ? 'correct':'wrong'}">
+              <div><strong>Your Answer:</strong> ${sel}</div>
+              <div style="margin-top:0.5rem;"><strong>Correct Answer:</strong> ${corr}</div>
+            </div>
+            ${q.explanation ? `<div class="small-muted" style="margin-top:1rem; padding:0.8rem; background:rgba(0,0,0,0.2); border-radius:8px;"><em>Explanation:</em> ${escapeHtml(q.explanation)}</div>`:''}
+            ${!isCorrect ? `<div style="margin-top:1rem;"><button class="btn gemini-explain-btn">✨ Explain Further</button><div class="gemini-explanation" style="display:none;"></div></div>`:''}`;
+          ansList.appendChild(row);
+          if(!isCorrect){
+            const btn=row.querySelector('.gemini-explain-btn'); const div=row.querySelector('.gemini-explanation');
+            btn.addEventListener('click', async ()=>{
+              btn.disabled=true; btn.innerHTML='<span class="loading-spinner"></span>Generating...'; div.style.display='block'; div.textContent='Thinking...';
+              const prompt=`Q: "${q.questionText}". Correct: "${corr}". Student answered: "${sel}". Explain why correct is right, why chosen is wrong, in a supportive way.`;
+              div.textContent=await callGemini(prompt); btn.style.display='none';
+            });
+          }
+        });
+      } else {
+        // 📌 Student summary dashboard
+        pageTitleEl.innerHTML = `<h2>${userName}'s Dashboard</h2>`;
+        const res = await apiGetMyResults();
+        if(res.error || res.length===0){ el.innerHTML='<h3>No results yet.</h3>'; return; }
+        let highest=0, lowest=100, total=0;
+        res.forEach(r=>{ const pct=r.total? (r.score/r.total)*100:0; if(pct>highest)highest=pct; if(pct<lowest)lowest=pct; total+=pct;});
+        const avg=res.length? total/res.length:0;
+        el.innerHTML=`<h3>Performance Overview</h3>
+          <div class="stats-grid">
+            <div class="stat-card"><h4>Highest Score</h4><p>${highest.toFixed(0)}%</p></div>
+            <div class="stat-card"><h4>Lowest Score</h4><p>${lowest.toFixed(0)}%</p></div>
+            <div class="stat-card"><h4>Average Score</h4><p>${avg.toFixed(0)}%</p></div>
+            <div class="stat-card"><h4>Quizzes Taken</h4><p>${res.length}</p></div>
+          </div>
+          <div style="margin-bottom:2.5rem;text-align:center;">
+            <button id="aiReviewBtn" class="btn">✨ Get AI Performance Review</button>
+            <div id="aiReviewResult" class="gemini-explanation" style="display:none;"></div>
+          </div>
+          <h3>All Your Attempts</h3>
+          <div id="allAttemptsList">${res.map(r=>`<div class="card" style="padding:20px;margin-top:1rem;display:flex;justify-content:space-between;align-items:center;"><div><div style="font-weight:700">${r.quizTitle||'Quiz'}</div><div class="small-muted">Score: ${r.score}/${r.total}</div></div><a href="results.html?result=${r._id}" class="btn-ghost">View Details</a></div>`).join('')}</div>`;
+        const aiBtn=document.getElementById('aiReviewBtn'), aiDiv=document.getElementById('aiReviewResult');
+        aiBtn.addEventListener('click', async()=>{
+          aiBtn.disabled=true; aiBtn.innerHTML='<span class="loading-spinner"></span>Analyzing...'; aiDiv.style.display='block'; aiDiv.textContent='Analyzing...';
+          const summary=res.map(r=>`- ${r.quizTitle||'Quiz'}: ${r.score}/${r.total}`).join('\n');
+          const prompt=`Student performance summary:\n${summary}\nGive supportive review, strengths, weaknesses, and 3 tips.`;
+          aiDiv.textContent=await callGemini(prompt); aiBtn.style.display='none';
+        });
+      }
+    }
+
+    function escapeHtml(s){ return s ? s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;') : ''; }
+
+    loadResults();
+  </script>
+</body>
+</html>
